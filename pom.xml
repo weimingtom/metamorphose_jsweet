@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jsweet</groupId>
-	<artifactId>jsweet-quickstart</artifactId>
+	<groupId>com.iteye.weimingtom</groupId>
+	<artifactId>metamorphose_jsweet</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>JSweet quick start</name>
-	<description>A simple project structure to get started with JSweet</description>
+	<name>Metamorphose JSweet transpile</name>
+	<description>Metamorphose JSweet transpile</description>
 	<developers>
 		<developer>
-			<id>rpawlak</id>
-			<name>Renaud Pawlak</name>
-			<email>renaud.pawlak@gmail.com</email>
+			<id>weimingtom</id>
+			<name>weimingtom</name>
+			<email></email>
 		</developer>
 	</developers>
 	<licenses>

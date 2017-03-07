@@ -873,14 +873,22 @@ final class MatchState
   {
     l = check_capture(l);
     int len = captureLen(l);
-    if (end - si >= len &&
-        src.regionMatches(false,
-            captureInit(l),
-            src,
+//    if (end - si >= len &&
+//        src.regionMatches(false,
+//            captureInit(l),
+//            src,
+//            si,
+//            len))
+    if (end - si >= len) {
+    	int pos = captureInit(l);
+    	if (src.substring(
+            pos, pos + len).equals(
+            src.substring(
             si,
-            len))
-    {
-      return si+len;
+            si + len)))
+	    {
+	      return si+len;
+	    }
     }
     return -1;
   }

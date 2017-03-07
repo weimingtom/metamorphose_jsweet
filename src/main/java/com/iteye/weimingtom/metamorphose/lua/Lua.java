@@ -24,7 +24,6 @@
 
 package com.iteye.weimingtom.metamorphose.lua;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -475,7 +474,7 @@ public final class Lua
    */
   public int gc(int what, int data)
   {
-    Runtime rt;
+//    Runtime rt;
 
     switch (what)
     {
@@ -487,11 +486,13 @@ public final class Lua
         System.gc();
         return 0;
       case GCCOUNT:
-        rt = Runtime.getRuntime();
-        return (int)((rt.totalMemory() - rt.freeMemory()) / 1024);
+//        rt = Runtime.getRuntime();
+//        return (int)((rt.totalMemory() - rt.freeMemory()) / 1024);
+    	  return 0;
       case GCCOUNTB:
-        rt = Runtime.getRuntime();
-        return (int)((rt.totalMemory() - rt.freeMemory()) % 1024);
+//        rt = Runtime.getRuntime();
+//        return (int)((rt.totalMemory() - rt.freeMemory()) % 1024);
+    	  return 0;
       case GCSETPAUSE:
       case GCSETSTEPMUL:
         return 0;
@@ -854,7 +855,7 @@ public final class Lua
     LuaTable t = (LuaTable)o;
     Object key = value(-1);
     pop(1);
-    Iterator e = t.keys();
+    Enum e = t.keys();
     if (key == NIL)
     {
       if (e.hasNext())
@@ -989,18 +990,18 @@ public final class Lua
       allowhook = old_allowhook;
       errorStatus = e.errorStatus;
     }
-    catch (OutOfMemoryError e)
-    {
-      fClose(restoreStack);     // close eventual pending closures
-      dSeterrorobj(ERRMEM, restoreStack);
-      nCcalls = oldnCcalls;
-      civ.setSize(restoreCi);
-      CallInfo ci = ci();
-      base = ci.base();
-      savedpc = ci.savedpc();
-      allowhook = old_allowhook;
-      errorStatus = ERRMEM;
-    }
+//    catch (OutOfMemoryError e)
+//    {
+//      fClose(restoreStack);     // close eventual pending closures
+//      dSeterrorobj(ERRMEM, restoreStack);
+//      nCcalls = oldnCcalls;
+//      civ.setSize(restoreCi);
+//      CallInfo ci = ci();
+//      base = ci.base();
+//      savedpc = ci.savedpc();
+//      allowhook = old_allowhook;
+//      errorStatus = ERRMEM;
+//    }
     errfunc = old_errfunc;
     return errorStatus;
   }
@@ -1347,7 +1348,7 @@ protect:
    * @param t  a Lua table.
    * @return an Enumeration object.
    */
-  public Iterator tableKeys(Object t)
+  public Enum tableKeys(Object t)
   {
     if (!(t instanceof LuaTable))
     {
@@ -4422,168 +4423,168 @@ reentry:
   static int uDump(Proto f, OutputStream writer, boolean strip)
       throws IOException
   {
-    DumpState d = new DumpState(new DataOutputStream(writer), strip) ;
-    d.DumpHeader();
-    d.DumpFunction(f, null);
-    d.writer.flush();
+//    DumpState d = new DumpState(new DataOutputStream(writer), strip) ;
+//    d.DumpHeader();
+//    d.DumpFunction(f, null);
+//    d.writer.flush();
     return 0;   // Any errors result in thrown exceptions.
   }
 
 }
 
-final class DumpState
-{
-  DataOutputStream writer;
-  boolean strip;
-
-  DumpState(DataOutputStream writer, boolean strip)
-  {
-    this.writer = writer ;
-    this.strip = strip ;
-  }
-
-
-  //////////////// dumper ////////////////////
-
-  void DumpHeader() throws IOException
-  {
-    /*
-     * In order to make the code more compact the dumper re-uses the
-     * header defined in Loader.java.  It has to fix the endianness byte
-     * first.
-     */
-    Loader.HEADER[6] = 0;
-    writer.write(Loader.HEADER) ;
-  }
-
-  private void DumpInt(int i) throws IOException
-  {
-    writer.writeInt(i) ;        // big-endian
-  }
-
-  private void DumpNumber(double d) throws IOException
-  {
-    writer.writeDouble(d) ;     // big-endian
-  }
-
-  void DumpFunction(Proto f, String p) throws IOException
-  {
-    DumpString((f.source == p || strip) ? null : f.source);
-    DumpInt(f.linedefined);
-    DumpInt(f.lastlinedefined);
-    writer.writeByte(f.nups);
-    writer.writeByte(f.numparams);
-    writer.writeBoolean(f.isVararg());
-    writer.writeByte(f.maxstacksize);
-    DumpCode(f);
-    DumpConstants(f);
-    DumpDebug(f);
-  }
-
-  private void DumpCode(Proto f) throws IOException
-  {
-    int n = f.sizecode ;
-    int [] code = f.code ;
-    DumpInt(n);
-    for (int i = 0 ; i < n ; i++)
-      DumpInt(code[i]) ;
-  }
-
-  private void DumpConstants(Proto f) throws IOException
-  {
-    int n = f.sizek;
-    Slot[] k = f.k ;
-    DumpInt(n) ;
-    for (int i = 0 ; i < n ; i++)
-    {
-      Object o = k[i].r;
-      if (o == Lua.NIL)
-      {
-        writer.writeByte(Lua.TNIL) ;
-      }
-      else if (o instanceof Boolean)
-      {
-        writer.writeByte(Lua.TBOOLEAN) ;
-        writer.writeBoolean(((Boolean)o).booleanValue()) ;
-      }
-      else if (o == Lua.NUMBER)
-      {
-        writer.writeByte(Lua.TNUMBER) ;
-        DumpNumber(k[i].d);
-      }
-      else if (o instanceof String)
-      {
-        writer.writeByte(Lua.TSTRING) ;
-        DumpString((String)o) ;
-      }
-      else
-      {
-        //# assert false
-      }
-    }
-    n = f.sizep ;
-    DumpInt(n) ;
-    for (int i = 0 ; i < n ; i++)
-    {
-      Proto subfunc = f.p[i] ;
-      DumpFunction(subfunc, f.source) ;
-    }
-  }
-
-  private void DumpString(String s) throws IOException
-  {
-    if (s == null)
-    {
-      DumpInt(0);
-    }
-    else
-    {
-      /*
-       * Strings are dumped by converting to UTF-8 encoding.  The MIDP
-       * 2.0 spec guarantees that this encoding will be supported (see
-       * page 9 of midp-2_0-fr-spec.pdf).  Nonetheless, any
-       * possible UnsupportedEncodingException is left to be thrown
-       * (it's a subclass of IOException which is declared to be thrown).
-       */
-      byte [] contents = s.getBytes("UTF-8") ;
-      int size = contents.length ;
-      DumpInt(size+1) ;
-      writer.write(contents, 0, size) ;
-      writer.writeByte(0) ;
-    }
-  }
-
-  private void DumpDebug(Proto f) throws IOException
-  {
-    if (strip)
-    {
-      DumpInt(0) ;
-      DumpInt(0) ;
-      DumpInt(0) ;
-      return ;
-    }
-
-    int n = f.sizelineinfo;
-    DumpInt(n);
-    for (int i=0; i<n; i++)
-      DumpInt(f.lineinfo[i]) ;
-
-    n = f.sizelocvars;
-    DumpInt(n);
-    for (int i=0; i<n; i++)
-    {
-      LocVar locvar = f.locvars[i] ;
-      DumpString(locvar.varname);
-      DumpInt(locvar.startpc);
-      DumpInt(locvar.endpc);
-    }
-
-    n = f.sizeupvalues;
-    DumpInt(n);
-    for (int i=0; i<n; i++)
-      DumpString(f.upvalues[i]);
-  }
-}
+//final class DumpState
+//{
+//  DataOutputStream writer;
+//  boolean strip;
+//
+//  DumpState(DataOutputStream writer, boolean strip)
+//  {
+//    this.writer = writer ;
+//    this.strip = strip ;
+//  }
+//
+//
+//  //////////////// dumper ////////////////////
+//
+//  void DumpHeader() throws IOException
+//  {
+//    /*
+//     * In order to make the code more compact the dumper re-uses the
+//     * header defined in Loader.java.  It has to fix the endianness byte
+//     * first.
+//     */
+//    Loader.HEADER[6] = 0;
+//    writer.write(Loader.HEADER) ;
+//  }
+//
+//  private void DumpInt(int i) throws IOException
+//  {
+//    writer.writeInt(i) ;        // big-endian
+//  }
+//
+//  private void DumpNumber(double d) throws IOException
+//  {
+//    writer.writeDouble(d) ;     // big-endian
+//  }
+//
+//  void DumpFunction(Proto f, String p) throws IOException
+//  {
+//    DumpString((f.source == p || strip) ? null : f.source);
+//    DumpInt(f.linedefined);
+//    DumpInt(f.lastlinedefined);
+//    writer.writeByte(f.nups);
+//    writer.writeByte(f.numparams);
+//    writer.writeBoolean(f.isVararg());
+//    writer.writeByte(f.maxstacksize);
+//    DumpCode(f);
+//    DumpConstants(f);
+//    DumpDebug(f);
+//  }
+//
+//  private void DumpCode(Proto f) throws IOException
+//  {
+//    int n = f.sizecode ;
+//    int [] code = f.code ;
+//    DumpInt(n);
+//    for (int i = 0 ; i < n ; i++)
+//      DumpInt(code[i]) ;
+//  }
+//
+//  private void DumpConstants(Proto f) throws IOException
+//  {
+//    int n = f.sizek;
+//    Slot[] k = f.k ;
+//    DumpInt(n) ;
+//    for (int i = 0 ; i < n ; i++)
+//    {
+//      Object o = k[i].r;
+//      if (o == Lua.NIL)
+//      {
+//        writer.writeByte(Lua.TNIL) ;
+//      }
+//      else if (o instanceof Boolean)
+//      {
+//        writer.writeByte(Lua.TBOOLEAN) ;
+//        writer.writeBoolean(((Boolean)o).booleanValue()) ;
+//      }
+//      else if (o == Lua.NUMBER)
+//      {
+//        writer.writeByte(Lua.TNUMBER) ;
+//        DumpNumber(k[i].d);
+//      }
+//      else if (o instanceof String)
+//      {
+//        writer.writeByte(Lua.TSTRING) ;
+//        DumpString((String)o) ;
+//      }
+//      else
+//      {
+//        //# assert false
+//      }
+//    }
+//    n = f.sizep ;
+//    DumpInt(n) ;
+//    for (int i = 0 ; i < n ; i++)
+//    {
+//      Proto subfunc = f.p[i] ;
+//      DumpFunction(subfunc, f.source) ;
+//    }
+//  }
+//
+//  private void DumpString(String s) throws IOException
+//  {
+//    if (s == null)
+//    {
+//      DumpInt(0);
+//    }
+//    else
+//    {
+//      /*
+//       * Strings are dumped by converting to UTF-8 encoding.  The MIDP
+//       * 2.0 spec guarantees that this encoding will be supported (see
+//       * page 9 of midp-2_0-fr-spec.pdf).  Nonetheless, any
+//       * possible UnsupportedEncodingException is left to be thrown
+//       * (it's a subclass of IOException which is declared to be thrown).
+//       */
+//      byte [] contents = s.getBytes(); //"UTF-8"
+//      int size = contents.length ;
+//      DumpInt(size+1) ;
+//      writer.write(contents, 0, size) ;
+//      writer.writeByte(0) ;
+//    }
+//  }
+//
+//  private void DumpDebug(Proto f) throws IOException
+//  {
+//    if (strip)
+//    {
+//      DumpInt(0) ;
+//      DumpInt(0) ;
+//      DumpInt(0) ;
+//      return ;
+//    }
+//
+//    int n = f.sizelineinfo;
+//    DumpInt(n);
+//    for (int i=0; i<n; i++)
+//      DumpInt(f.lineinfo[i]) ;
+//
+//    n = f.sizelocvars;
+//    DumpInt(n);
+//    for (int i=0; i<n; i++)
+//    {
+//      LocVar locvar = f.locvars[i] ;
+//      DumpString(locvar.varname);
+//      DumpInt(locvar.startpc);
+//      DumpInt(locvar.endpc);
+//    }
+//
+//    n = f.sizeupvalues;
+//    DumpInt(n);
+//    for (int i=0; i<n; i++)
+//      DumpString(f.upvalues[i]);
+//  }
+//}
 
 final class Slot
 {

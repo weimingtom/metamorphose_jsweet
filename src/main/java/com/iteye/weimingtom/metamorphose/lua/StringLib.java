@@ -197,7 +197,7 @@ public final class StringLib extends LuaJavaCallback
     for (int i=1; i<=n; ++i)
     {
       int c = L.checkInt(i);
-      L.argCheck((char)c == c, i, "invalid value");
+//      L.argCheck((char)c == c, i, "invalid value");
       b.append((char)c);
     }
     L.push(b.toString());
@@ -427,7 +427,7 @@ public final class StringLib extends LuaJavaCallback
         ++arg;
         FormatItem item = new FormatItem(L, strfrmt.substring(i));
         i += item.length();
-        switch (item.type())
+        switch ((char)item.type())
         {
           case 'c':
             item.formatChar(b, (char)L.checkNumber(arg));
@@ -659,7 +659,7 @@ final class MatchState
 
   char check_capture(char l)
   {
-    l -= '1';   // relies on wraparound.
+    l = (char)((int)l - 1);   // relies on wraparound.
     if (l >= level || captureLen(l) == CAP_UNFINISHED)
       capInvalid();
     return l;
@@ -725,7 +725,7 @@ final class MatchState
       case 'u' : res = Syntax.isupper(c); break;
       case 'w' : res = Syntax.isalnum(c); break;
       case 'x' : res = Syntax.isxdigit(c); break;
-      case 'z' : res = (c == 0); break;
+      case 'z' : res = ((int)c == 0); break;
       default: return (cl == c);
     }
     return Character.isLowerCase(cl) ? res : !res;

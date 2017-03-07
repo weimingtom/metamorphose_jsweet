@@ -98,7 +98,7 @@ final class Loader
   Proto undump() throws IOException
   {
     this.header();
-    return this.function(null);
+    return this.function_(null);
   }
 
 
@@ -257,7 +257,7 @@ final class Loader
    * @param parentSource  Name of parent source "file".
    * @throws IOException  when binary is malformed.
    */
-  private Proto function(String parentSource) throws IOException
+  private Proto function_(String parentSource) throws IOException
   {
     String source;
     int linedefined;
@@ -477,7 +477,7 @@ final class Loader
 
     for (int i=0; i<n; ++i)
     {
-      p[i] = function(source);
+      p[i] = function_(source);
     }
     return p;
   }
@@ -505,7 +505,7 @@ final class Loader
     if (in.read() == -1)
       throw new RuntimeException("EOFException");
 
-    return (new String(buf, "UTF-8"));//.intern();
+    return (new String(buf));//new String(buf, "UTF-8").intern();
   }
 
   /**

@@ -559,7 +559,7 @@ public final class LuaTable extends java.util.HashMap
     throw new IllegalArgumentException();
   }
 
-  public Iterator keys()
+  public Enum keys()
   {
     return new Enum(this, super.keySet().iterator());
   }
@@ -610,7 +610,7 @@ public final class LuaTable extends java.util.HashMap
   }
 }
 
-final class Enum implements Iterator
+final class Enum /*implements Iterator*/
 {
   private LuaTable t;
   private int i;        // = 0
@@ -660,12 +660,12 @@ final class Enum implements Iterator
     return r;
   }
 
-@Override
+//@Override
 public boolean hasNext() {
 	return hasMoreElements();
 }
 
-@Override
+//@Override
 public Object next() {
 	return nextElement();
 }

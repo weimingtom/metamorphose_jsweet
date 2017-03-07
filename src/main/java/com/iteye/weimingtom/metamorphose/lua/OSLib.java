@@ -27,10 +27,6 @@
 
 package com.iteye.weimingtom.metamorphose.lua;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 /**
  * The OS Library.  Can be opened into a {@link Lua} state by invoking
  * the {@link #open} method.
@@ -144,41 +140,41 @@ public final class OSLib extends LuaJavaCallback
     }
 
     String s = L.optString(1, "%c");
-    TimeZone tz = TimeZone.getDefault();
+//    TimeZone tz = TimeZone.getDefault();
     if (s.startsWith("!"))
     {
-      tz = TimeZone.getTimeZone("GMT");
+//      tz = TimeZone.getTimeZone("GMT");
       s = s.substring(1);
     }
 
-    Calendar c = Calendar.getInstance(tz);
-    c.setTime(new Date(t));
+    //Calendar c = Calendar.getInstance(tz);
+    //c.setTime(new Date(t));
 
     if (s.equals("*t"))
     {
       L.push(L.createTable(0, 8));      // 8 = number of fields
-      setfield(L, "sec", c.get(Calendar.SECOND));
-      setfield(L, "min", c.get(Calendar.MINUTE));
-      setfield(L, "hour", c.get(Calendar.HOUR));
-      setfield(L, "day", c.get(Calendar.DAY_OF_MONTH));
-      setfield(L, "month", canonicalmonth(c.get(Calendar.MONTH)));
-      setfield(L, "year", c.get(Calendar.YEAR));
-      setfield(L, "wday", canonicalweekday(c.get(Calendar.DAY_OF_WEEK)));
+      setfield(L, "sec", 0);//c.get(Calendar.SECOND));
+      setfield(L, "min", 0);//c.get(Calendar.MINUTE));
+      setfield(L, "hour", 0);//c.get(Calendar.HOUR));
+      setfield(L, "day", 0);//c.get(Calendar.DAY_OF_MONTH));
+      setfield(L, "month", 0);//canonicalmonth(c.get(Calendar.MONTH)));
+      setfield(L, "year", 0);//c.get(Calendar.YEAR));
+      setfield(L, "wday", 0);//canonicalweekday(c.get(Calendar.DAY_OF_WEEK)));
       // yday is not supported because CLDC 1.1 does not provide it.
       // setfield(L, "yday", c.get("???"));
-      if (tz.useDaylightTime())
-      {
-        // CLDC 1.1 does not provide any way to determine isdst, so we set
-        // it to -1 (which in C means that the information is not
-        // available).
-        setfield(L, "isdst", -1);
-      }
-      else
-      {
+//      if (tz.useDaylightTime())
+//      {
+//        // CLDC 1.1 does not provide any way to determine isdst, so we set
+//        // it to -1 (which in C means that the information is not
+//        // available).
+//        setfield(L, "isdst", -1);
+//      }
+//      else
+//      {
         // On the other hand if the timezone does not do DST then it
         // can't be in effect.
         setfield(L, "isdst", 0);
-      }
+//      }
     }
     else
     {
@@ -206,25 +202,26 @@ public final class OSLib extends LuaJavaCallback
         switch (ch)
         {
           case 'a': case 'A':
-            b.append(weekdayname(c));
+//            b.append(weekdayname(c));
             break;
           case 'b': case 'B':
-            b.append(monthname(c));
+//            b.append(monthname(c));
             break;
           case 'c':
-            b.append(c.getTime().toString());
+//            b.append(c.getTime().toString());
             //FIXME:should be this
             //b.append(String.format("%tc", c));
             break;
           case 'd':
-            b.append(format(c.get(Calendar.DAY_OF_MONTH), 2));
+//            b.append(format(c.get(Calendar.DAY_OF_MONTH), 2));
             break;
           case 'H':
-            b.append(format(c.get(Calendar.HOUR), 2));
+//            b.append(format(c.get(Calendar.HOUR), 2));
             break;
           case 'I':
             {
-              int h = c.get(Calendar.HOUR);
+//              int h = c.get(Calendar.HOUR);
+            	int h = 0;
               h = (h+11)%12+1;  // force into range 1-12
               b.append(format(h, 2));
             }
@@ -237,50 +234,54 @@ public final class OSLib extends LuaJavaCallback
             break;
           case 'm':
             {
-              int m = canonicalmonth(c.get(Calendar.MONTH));
+            	int m = 0;
+//              int m = canonicalmonth(c.get(Calendar.MONTH));
               b.append(format(m, 2));
             }
             break;
           case 'M':
-            b.append(format(c.get(Calendar.MINUTE), 2));
+//            b.append(format(c.get(Calendar.MINUTE), 2));
             break;
           case 'p':
             {
-              int h = c.get(Calendar.HOUR);
+//              int h = c.get(Calendar.HOUR);
+            	int h = 0;
               b.append(h<12 ? "am" : "pm");
             }
             break;
           case 'S':
-            b.append(format(c.get(Calendar.SECOND), 2));
+//            b.append(format(c.get(Calendar.SECOND), 2));
             break;
           case 'w':
-            b.append(canonicalweekday(c.get(Calendar.DAY_OF_WEEK)));
+//            b.append(canonicalweekday(c.get(Calendar.DAY_OF_WEEK)));
             break;
           case 'x':
             {
-              String u = c.getTime().toString();
+//              String u = c.getTime().toString();
+            	String u = "";
               // We extract fields from the result of Date.toString.
               // The output of which is of the form:
               // dow mon dd hh:mm:ss zzz yyyy
               // except that zzz is optional.
               b.append(u.substring(0, 11));
-              b.append(c.get(Calendar.YEAR));
+//              b.append(c.get(Calendar.YEAR));
             }
             break;
           case 'X':
             {
-              String u = c.getTime().toString();
+//              String u = c.getTime().toString();
+            	String u = "";
               b.append(u.substring(11, u.length()-5));
             }
             break;
           case 'y':
-            b.append(format(c.get(Calendar.YEAR) % 100, 2));
+//            b.append(format(c.get(Calendar.YEAR) % 100, 2));
             break;
           case 'Y':
-            b.append(c.get(Calendar.YEAR));
+//            b.append(c.get(Calendar.YEAR));
             break;
           case 'Z':
-            b.append(tz.getID());
+//            b.append(tz.getID());
             break;
           case '%':
             b.append('%');
@@ -305,21 +306,21 @@ public final class OSLib extends LuaJavaCallback
    * Converts from 0-11 to required Calendar value.  DO NOT MODIFY THIS
    * ARRAY.
    */
-  private static final int[] MONTH =
-  {
-    Calendar.JANUARY,
-    Calendar.FEBRUARY,
-    Calendar.MARCH,
-    Calendar.APRIL,
-    Calendar.MAY,
-    Calendar.JUNE,
-    Calendar.JULY,
-    Calendar.AUGUST,
-    Calendar.SEPTEMBER,
-    Calendar.OCTOBER,
-    Calendar.NOVEMBER,
-    Calendar.DECEMBER
-  };
+//  private static final int[] MONTH =
+//  {
+//    Calendar.JANUARY,
+//    Calendar.FEBRUARY,
+//    Calendar.MARCH,
+//    Calendar.APRIL,
+//    Calendar.MAY,
+//    Calendar.JUNE,
+//    Calendar.JULY,
+//    Calendar.AUGUST,
+//    Calendar.SEPTEMBER,
+//    Calendar.OCTOBER,
+//    Calendar.NOVEMBER,
+//    Calendar.DECEMBER
+//  };
 
   /** Implements setlocale. */
   private static int setlocale(Lua L)
@@ -345,15 +346,16 @@ public final class OSLib extends LuaJavaCallback
     }
     L.checkType(1, Lua.TTABLE);
     L.setTop(1);        // make sure table is at the top
-    Calendar c = Calendar.getInstance();
-    c.set(Calendar.SECOND, getfield(L, "sec", 0));
-    c.set(Calendar.MINUTE, getfield(L, "min", 0));
-    c.set(Calendar.HOUR, getfield(L, "hour", 12));
-    c.set(Calendar.DAY_OF_MONTH, getfield(L, "day", -1));
-    c.set(Calendar.MONTH, MONTH[getfield(L, "month", -1) - 1]);
-    c.set(Calendar.YEAR, getfield(L, "year", -1));
-    // ignore isdst field
-    L.pushNumber(c.getTime().getTime());
+//    Calendar c = Calendar.getInstance();
+//    c.set(Calendar.SECOND, getfield(L, "sec", 0));
+//    c.set(Calendar.MINUTE, getfield(L, "min", 0));
+//    c.set(Calendar.HOUR, getfield(L, "hour", 12));
+//    c.set(Calendar.DAY_OF_MONTH, getfield(L, "day", -1));
+//    c.set(Calendar.MONTH, MONTH[getfield(L, "month", -1) - 1]);
+//    c.set(Calendar.YEAR, getfield(L, "year", -1));
+//    // ignore isdst field
+//    L.pushNumber(c.getTime().getTime());
+    L.pushNumber(0);
     return 1;
   }
 
@@ -386,17 +388,17 @@ public final class OSLib extends LuaJavaCallback
     return b.toString();
   }
 
-  private static String weekdayname(Calendar c)
-  {
-    String s = c.getTime().toString();
-    return s.substring(0, 3);
-  }
-
-  private static String monthname(Calendar c)
-  {
-    String s = c.getTime().toString();
-    return s.substring(4, 7);
-  }
+//  private static String weekdayname(Calendar c)
+//  {
+//    String s = c.getTime().toString();
+//    return s.substring(0, 3);
+//  }
+//
+//  private static String monthname(Calendar c)
+//  {
+//    String s = c.getTime().toString();
+//    return s.substring(4, 7);
+//  }
 
   /**
    * (almost) inverts the conversion provided by {@link #MONTH}.  Converts
@@ -406,27 +408,27 @@ public final class OSLib extends LuaJavaCallback
    */
   private static int canonicalmonth(int m)
   {
-    for (int i=0; i<MONTH.length; ++i)
-    {
-      if (m == MONTH[i])
-      {
-        return i+1;
-      }
-    }
+//    for (int i=0; i<MONTH.length; ++i)
+//    {
+//      if (m == MONTH[i])
+//      {
+//        return i+1;
+//      }
+//    }
     return m;
   }
 
   // DO NOT MODIFY ARRAY
-  private static final int[] WEEKDAY =
-  {
-    Calendar.SUNDAY,
-    Calendar.MONDAY,
-    Calendar.TUESDAY,
-    Calendar.WEDNESDAY,
-    Calendar.THURSDAY,
-    Calendar.FRIDAY,
-    Calendar.SATURDAY,
-  };
+//  private static final int[] WEEKDAY =
+//  {
+//    Calendar.SUNDAY,
+//    Calendar.MONDAY,
+//    Calendar.TUESDAY,
+//    Calendar.WEDNESDAY,
+//    Calendar.THURSDAY,
+//    Calendar.FRIDAY,
+//    Calendar.SATURDAY,
+//  };
 
   /**
    * Converts from a {@link Calendar} value to a weekday in the range
@@ -436,13 +438,13 @@ public final class OSLib extends LuaJavaCallback
    */
   private static int canonicalweekday(int w)
   {
-    for (int i=0; i<WEEKDAY.length; ++i)
-    {
-      if (w == WEEKDAY[i])
-      {
-        return i;
-      }
-    }
+//    for (int i=0; i<WEEKDAY.length; ++i)
+//    {
+//      if (w == WEEKDAY[i])
+//      {
+//        return i;
+//      }
+//    }
     return w;
   }
   

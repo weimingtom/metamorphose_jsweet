@@ -581,7 +581,7 @@ public final class StringLib extends LuaJavaCallback
     int l = set.length();
     for (int i=0; i<l; ++i)
     {
-      int idx = s.indexOf(set.charAt(i));
+      int idx = s.indexOf(Character.toString(set.charAt(i)));
       if (idx >= 0)
         return idx;
     }
@@ -599,7 +599,7 @@ final class MatchState
   /** Total number of captures (finished or unfinished). */
   int level;
   /** Each capture element is a 2-element array of (index, len). */
-  Vector capture = new Vector();
+  Vector<Object> capture = new Vector<Object>();
   // :todo: consider adding the pattern string as a member (and removing
   // p parameter from methods).
 
@@ -1439,7 +1439,7 @@ flag:
     }
     else
     {
-      int ei = s.indexOf('E');
+      int ei = s.indexOf(Character.toString('E'));
       e = Integer.parseInt(s.substring(ei+1));
       t.delete(ei, Integer.MAX_VALUE);
     }
@@ -1480,8 +1480,8 @@ flag:
     String s = Double.toString(d);
     StringBuffer t = new StringBuffer(s);
 
-    int di = s.indexOf('.');
-    int ei = s.indexOf('E');
+    int di = s.indexOf(Character.toString('.'));
+    int ei = s.indexOf(Character.toString('E'));
     if (ei >= 0)
     {
       t.delete(ei, Integer.MAX_VALUE);
@@ -1537,14 +1537,14 @@ flag:
       // %e style
       --precision;
       s = formatFloatRawE(d);
-      int di = s.indexOf('.');
+      int di = s.indexOf(Character.toString('.'));
       if (di >= 0)
       {
         // Trim trailing zeroes from fractional part
-        int ei = s.indexOf('E');
+        int ei = s.indexOf(Character.toString('E'));
         if (ei < 0)
         {
-          ei = s.indexOf('e');
+          ei = s.indexOf(Character.toString('e'));
         }
         int i = ei-1;
         while (s.charAt(i) == '0')
@@ -1592,7 +1592,7 @@ flag:
       // (10**(precision-1)).
       StringBuffer a = new StringBuffer(s);
       a.delete(fsd+required, Integer.MAX_VALUE);
-      if (s.indexOf('.') < a.length())
+      if (s.indexOf(Character.toString('.')) < a.length())
       {
         // Trim trailing zeroes
         int i = a.length() - 1;
@@ -1630,7 +1630,7 @@ flag:
     }
 
     String s = t.toString();
-    int di = s.indexOf('.');
+    int di = s.indexOf(Character.toString('.'));
     int l = t.length();
     if (0 == precision)
     {

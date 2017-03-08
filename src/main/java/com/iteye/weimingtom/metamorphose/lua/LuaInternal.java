@@ -40,9 +40,9 @@ final class LuaInternal extends LuaJavaCallback
   private Reader reader;
   private String chunkname;
 
-  LuaInternal(InputStream in, String chunkname)
+  LuaInternal(InputStream in_, String chunkname)
   {
-    this.stream = in;
+    this.stream = in_;
     this.chunkname = chunkname;
   }
 

@@ -128,7 +128,7 @@ public final class Lua
    * Vector of CallInfo records.  Actually it's a Stack which is a
    * subclass of Vector, but it mostly the Vector methods that are used.
    */
-  private Stack civ = new Stack();
+  private Stack<CallInfo> civ = new Stack<CallInfo>();
   {
     civ.addElement(new CallInfo());
   }
@@ -143,7 +143,7 @@ public final class Lua
    * slot index: higher stack indexes are stored at higher Vector
    * positions.
    */
-  private Vector openupval = new Vector();
+  private Vector<UpVal> openupval = new Vector<UpVal>();
 
   int hookcount;
   int basehookcount;
@@ -424,18 +424,18 @@ public final class Lua
 
   /**
    * Dumps a function as a binary chunk.
-   * @param function  the Lua function to dump.
+   * @param function_  the Lua function to dump.
    * @param writer    the stream that receives the dumped binary.
    * @throws IOException when writer does.
    */
-  public static void dump(Object function, OutputStream writer)
+  public static void dump(Object function_, OutputStream writer)
       throws IOException
   {
-    if (!(function instanceof LuaFunction))
+    if (!(function_ instanceof LuaFunction))
     {
-      throw new IOException("Cannot dump " + typeName(type(function)));
+      throw new IOException("Cannot dump " + typeName(type(function_)));
     }
-    LuaFunction f = (LuaFunction)function;
+    LuaFunction f = (LuaFunction)function_;
     uDump(f.proto(), writer, false);
   }
 
@@ -803,14 +803,14 @@ public final class Lua
    * status code is returned to indicate an error and the error message
    * is pushed onto the stack.
    * </p>
-   * @param in         The binary chunk as an InputStream, for example from
+   * @param in_         The binary chunk as an InputStream, for example from
    *                   {@link Class#getResourceAsStream}.
    * @param chunkname  The name of the chunk.
    * @return           A status code.
    */
-  public int load(InputStream in, String chunkname)
+  public int load(InputStream in_, String chunkname)
   {
-    push(new LuaInternal(in, chunkname));
+    push(new LuaInternal(in_, chunkname));
     return pcall(0, 1, null);
   }
 
@@ -824,15 +824,15 @@ public final class Lua
    * binary chunk.
    * In every other respect this method is just like {@link
    * #load(InputStream, String)}.
-   * @param in         The source chunk as a Reader, for example from
+   * @param in_         The source chunk as a Reader, for example from
    *                   <code>java.io.InputStreamReader(Class.getResourceAsStream())</code>.
    * @param chunkname  The name of the chunk.
    * @return           A status code.
    * @see java.io.InputStreamReader
    */
-  public int load(Reader in, String chunkname)
+  public int load(Reader in_, String chunkname)
   {
-    push(new LuaInternal(in, chunkname));
+    push(new LuaInternal(in_, chunkname));
     return pcall(0, 1, null);
   }
 
@@ -846,7 +846,7 @@ public final class Lua
    * <code>false</code> is returned.
    * @param idx  stack index of table.
    * @return  true if and only if there are more keys in the table.
-   * @deprecated Use {@link #tableKeys} enumeration protocol instead.
+   * deprecated Use {@link #tableKeys} enumeration protocol instead.
    */
   public boolean next(int idx)
   {
@@ -1862,7 +1862,7 @@ protect:
     int i = 0;
     do
     {
-      e = fname.indexOf('.', i);
+      e = fname.indexOf(Character.toString('.'), i);
       String part;
       if (e < 0)
       {
@@ -2113,7 +2113,7 @@ protect:
       //# assert isFunction(f)
     }
     boolean status = auxgetinfo(what, ar, f, callinfo);
-    if (what.indexOf('f') >= 0)
+    if (what.indexOf(Character.toString('f')) >= 0)
     {
       if (f == null)
       {
@@ -2525,7 +2525,7 @@ protect:
       return source;
     }
     // else  [string "string"]
-    int l = source.indexOf('\n');
+    int l = source.indexOf(Character.toString('\n'));
     if (l == -1)
     {
       l = source.length();
@@ -2780,8 +2780,8 @@ protect:
    */
   private Slot RK(int field)
   {
-    LuaFunction function = (LuaFunction)stack[ci().function()].r;
-    Slot[] k = function.proto().constant();
+    LuaFunction function_ = (LuaFunction)stack[ci().function()].r;
+    Slot[] k = function_.proto().constant();
     return RK(k, field);
   }
 
@@ -3003,8 +3003,8 @@ reentry:
     while (true)
     {
       // assert stack[ci.function()].r instanceof LuaFunction;
-      LuaFunction function = (LuaFunction)stack[ci().function()].r;
-      Proto proto = function.proto();
+      LuaFunction function_ = (LuaFunction)stack[ci().function()].r;
+      Proto proto = function_.proto();
       int[] code = proto.code();
       Slot[] k = proto.constant();
       int pc = savedpc;
@@ -3066,14 +3066,14 @@ reentry:
           {
             int b = ARGB(i);
             // :todo: optimise path
-            setObjectAt(function.upVal(b).getValue(), base+a);
+            setObjectAt(function_.upVal(b).getValue(), base+a);
             continue;
           }
           case OP_GETGLOBAL:
             rb = k[ARGBx(i)];
             // assert rb instance of String;
             savedpc = pc; // Protect
-            vmGettable(function.getEnv(), rb, stack[base+a]);
+            vmGettable(function_.getEnv(), rb, stack[base+a]);
             continue;
           case OP_GETTABLE:
           {
@@ -3090,14 +3090,14 @@ reentry:
           }
           case OP_SETUPVAL:
           {
-            UpVal uv = function.upVal(ARGB(i));
+            UpVal uv = function_.upVal(ARGB(i));
             uv.setValue(objectAt(base+a));
             continue;
           }
           case OP_SETGLOBAL:
             savedpc = pc; // Protect
             // :todo: consider inlining objectAt
-            vmSettable(function.getEnv(), k[ARGBx(i)],
+            vmSettable(function_.getEnv(), k[ARGBx(i)],
                 objectAt(base+a));
             continue;
           case OP_SETTABLE:
@@ -3550,23 +3550,23 @@ reentry:
             continue;
           case OP_CLOSURE:
           {
-            Proto p = function.proto().proto()[ARGBx(i)];
+            Proto p = function_.proto().proto()[ARGBx(i)];
             int nup = p.nups();
             UpVal[] up = new UpVal[nup];
             for (int j=0; j<nup; j++, pc++)
             {
-              int in = code[pc];
-              if (OPCODE(in) == OP_GETUPVAL)
+              int in_ = code[pc];
+              if (OPCODE(in_) == OP_GETUPVAL)
               {
-                up[j] = function.upVal(ARGB(in));
+                up[j] = function_.upVal(ARGB(in_));
               }
               else
               {
                 // assert OPCODE(in) == OP_MOVE;
-                up[j] = fFindupval(base + ARGB(in));
+                up[j] = fFindupval(base + ARGB(in_));
               }
             }
-            LuaFunction nf = new LuaFunction(p, up, function.getEnv());
+            LuaFunction nf = new LuaFunction(p, up, function_.getEnv());
             stack[base+a].r = nf;
             continue;
           }
@@ -3574,7 +3574,7 @@ reentry:
           {
             int b = ARGB(i)-1;
             int n = (base - ci().function()) -
-                function.proto().numparams() - 1;
+                function_.proto().numparams() - 1;
             if (b == MULTRET)
             {
               // :todo: Protect

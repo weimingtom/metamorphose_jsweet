@@ -24,7 +24,6 @@
 
 package com.iteye.weimingtom.metamorphose.lua;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Iterator;
  * Calling any methods that are not defined in this class (but are
  * defined in a super class) is extremely deprecated.
  */
-public final class LuaTable extends java.util.HashMap
+public final class LuaTable extends java.util.HashMap<Object,Object>
 {
   private static final int MAXBITS = 26;
   private static final int MAXASIZE = 1 << MAXBITS;

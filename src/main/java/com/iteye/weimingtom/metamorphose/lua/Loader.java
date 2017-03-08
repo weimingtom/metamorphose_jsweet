@@ -63,16 +63,16 @@ final class Loader
    * A new chunk loader.  The <code>InputStream</code> must be
    * positioned at the beginning of the <code>LUA_SIGNATURE</code> that
    * marks the beginning of a Lua binary chunk.
-   * @param in    The binary stream from which the chunk is read.
+   * @param in_    The binary stream from which the chunk is read.
    * @param name  The name of the chunk.
    */
-  Loader(InputStream in, String name)
+  Loader(InputStream in_, String name)
   {
-    if (null == in)
+    if (null == in_)
     {
       throw new NullPointerException();
     }
-    this.in = in;
+    this.in = in_;
     // The name is treated slightly.  See lundump.c in the PUC-Rio
     // source for details.
     if (name.startsWith("@") || name.startsWith("="))

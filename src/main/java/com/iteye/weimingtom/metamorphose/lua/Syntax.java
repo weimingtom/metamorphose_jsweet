@@ -86,7 +86,7 @@ final class Syntax
     "<number>", "<name>", "<string>", "<eof>"
   };
 
-  static HashMap reserved = new HashMap();
+  static HashMap<String, Integer> reserved = new HashMap<String, Integer>();
   static
   {
     for (int i=0; i < NUM_RESERVED; ++i)
@@ -207,11 +207,11 @@ final class Syntax
 
   static boolean isspace(int c)
   {
-    return (char)c == ' ' ||
-    	   (char)c == '\f' ||
-    	   (char)c == '\n' ||
-    	   (char)c == '\r' ||
-    	   (char)c == '\t';
+    return c == (int)' ' ||
+    	   c == (int)'\f' ||
+    	   c == (int)'\n' ||
+    	   c == (int)'\r' ||
+    	   c == (int)'\t';
   }
 
   static boolean isupper(int c)
@@ -230,7 +230,7 @@ final class Syntax
 
   private boolean check_next(String set) throws IOException
   {
-    if (set.indexOf(current) < 0)
+    if (set.indexOf(Character.toString((char)current)) < 0)
     {
       return false;
     }
@@ -240,7 +240,7 @@ final class Syntax
 
   private boolean currIsNewline()
   {
-    return current == '\n' || current == '\r';
+    return current == (int)'\n' || current == (int)'\r';
   }
 
   private void inclinenumber() throws IOException
@@ -264,7 +264,7 @@ final class Syntax
     int s = current;
     //# assert s == '[' || s == ']'
     save_and_next();
-    while (current == '=')
+    while (current == (int)'=')
     {
       save_and_next();
       count++;
@@ -288,7 +288,7 @@ loop:
                                 "unfinished long comment",
               TK_EOS);
           break;  /* to avoid warnings */
-        case ']':
+        case (int)']':
           if (skip_sep() == sep)
           {
             save_and_next();  /* skip 2nd `]' */
@@ -296,8 +296,8 @@ loop:
           }
           break;
 
-        case '\n':
-        case '\r':
+        case (int)'\n':
+        case (int)'\r':
           save('\n');
           inclinenumber();
           if (!isString)
@@ -329,17 +329,17 @@ loop:
     {
       switch (current)
       {
-        case '\n':
-        case '\r':
+        case (int)'\n':
+        case (int)'\r':
           inclinenumber();
           continue;
-        case '-':
+        case (int)'-':
           next();
-          if (current != '-')
+          if (current != (int)'-')
             return '-';
           /* else is a comment */
           next();
-          if (current == '[')
+          if (current == (int)'[')
           {
             int sep = skip_sep();
             buff.setLength(0) ; /* `skip_sep' may dirty the buffer */
@@ -355,7 +355,7 @@ loop:
             next();
           continue;
 
-        case '[':
+        case (int)'[':
           int sep = skip_sep();
           if (sep >= 0)
           {
@@ -368,47 +368,47 @@ loop:
             xLexerror("invalid long string delimiter", TK_STRING);
           continue;     // avoids Checkstyle warning.
 
-        case '=':
+        case (int)'=':
           next() ;
-          if (current != '=')
+          if (current != (int)'=')
           { return '=' ; }
           else
           {
             next() ;
             return TK_EQ ;
           }
-        case '<':
+        case (int)'<':
           next() ;
-          if (current != '=')
+          if (current != (int)'=')
           { return '<' ; }
           else
           {
             next() ;
             return TK_LE ;
           }
-        case '>':
+        case (int)'>':
           next() ;
-          if (current != '=')
+          if (current != (int)'=')
           { return '>' ; }
           else
           {
             next() ;
             return TK_GE ;
           }
-        case '~':
+        case (int)'~':
           next();
-          if (current != '=')
+          if (current != (int)'=')
           { return '~'; }
           else
           {
             next();
             return TK_NE;
           }
-        case '"':
-        case '\'':
+        case (int)'"':
+        case (int)'\'':
           read_string(current);
           return TK_STRING;
-        case '.':
+        case (int)'.':
           save_and_next();
           if (check_next("."))
           {
@@ -444,13 +444,13 @@ loop:
             read_numeral();
             return TK_NUMBER;
           }
-          else if (isalpha(current) || current == '_')
+          else if (isalpha(current) || current == (int)'_')
           {
             // identifier or reserved word
             do
             {
               save_and_next();
-            } while (isalnum(current) || current == '_');
+            } while (isalnum(current) || current == (int)'_');
             String s = buff.toString();
             Object t = reserved.get(s);
             if (t == null)
@@ -485,12 +485,12 @@ loop:
     do
     {
       save_and_next();
-    } while (isdigit(current) || current == '.');
+    } while (isdigit(current) || current == (int)'.');
     if (check_next("Ee"))       // 'E' ?
     {
       check_next("+-"); // optional exponent sign
     }
-    while (isalnum(current) || current == '_')
+    while (isalnum(current) || current == (int)'_')
     {
       save_and_next();
     }
@@ -517,24 +517,24 @@ loop:
         case EOZ:
           xLexerror("unfinished string", TK_EOS);
           continue;     // avoid compiler warning
-        case '\n':
-        case '\r':
+        case (int)'\n':
+        case (int)'\r':
           xLexerror("unfinished string", TK_STRING);
           continue;     // avoid compiler warning
-        case '\\':
+        case (int)'\\':
         {
           int c;
           next();       // do not save the '\'
           switch (current)
           {
-            case 'a': c = 7; break;     // no '\a' in Java.
-            case 'b': c = '\b'; break;
-            case 'f': c = '\f'; break;
-            case 'n': c = '\n'; break;
-            case 'r': c = '\r'; break;
-            case 't': c = '\t'; break;
-            case 'v': c = 11; break;    // no '\v' in Java.
-            case '\n': case '\r':
+            case (int)'a': c = 7; break;     // no '\a' in Java.
+            case (int)'b': c = '\b'; break;
+            case (int)'f': c = '\f'; break;
+            case (int)'n': c = '\n'; break;
+            case (int)'r': c = '\r'; break;
+            case (int)'t': c = '\t'; break;
+            case (int)'v': c = 11; break;    // no '\v' in Java.
+            case (int)'\n': case (int)'\r':
               save('\n');
               inclinenumber();
               continue;
@@ -786,10 +786,10 @@ loop:
 
 
   /** Equivalent to luaY_parser. */
-  static Proto parser(Lua L, Reader in, String name)
+  static Proto parser(Lua L, Reader in_, String name)
       throws IOException
   {
-    Syntax ls = new Syntax(L, in, name);
+    Syntax ls = new Syntax(L, in_, name);
     FuncState fs = new FuncState(ls);
     ls.open_func(fs);
     fs.f.setIsVararg();
@@ -812,23 +812,23 @@ loop:
     }
   }
 
-  private void singlevar(Expdesc var) throws IOException
+  private void singlevar(Expdesc var_) throws IOException
   {
     String varname = str_checkname();
-    if (singlevaraux(fs, varname, var, true) == Expdesc.VGLOBAL)
+    if (singlevaraux(fs, varname, var_, true) == Expdesc.VGLOBAL)
     {
-      var.setInfo(fs.kStringK(varname));
+      var_.setInfo(fs.kStringK(varname));
     }
   }
 
   private int singlevaraux(FuncState f,
       String n,
-      Expdesc var,
+      Expdesc var_,
       boolean base)
   {
     if (f == null)      // no more levels?
     {
-      var.init(Expdesc.VGLOBAL, Lua.NO_REG);    // default is global variable
+      var_.init(Expdesc.VGLOBAL, Lua.NO_REG);    // default is global variable
       return Expdesc.VGLOBAL;
     }
     else
@@ -836,7 +836,7 @@ loop:
       int v = f.searchvar(n);
       if (v >= 0)
       {
-        var.init(Expdesc.VLOCAL, v);
+        var_.init(Expdesc.VLOCAL, v);
         if (!base)
         {
           f.markupval(v);       // local will be used as an upval
@@ -845,11 +845,11 @@ loop:
       }
       else    // not found at current level; try upper one
       {
-        if (singlevaraux(f.prev, n, var, false) == Expdesc.VGLOBAL)
+        if (singlevaraux(f.prev, n, var_, false) == Expdesc.VGLOBAL)
         {
           return Expdesc.VGLOBAL;
         }
-        var.upval(indexupvalue(f, n, var));     // else was LOCAL or UPVAL
+        var_.upval(indexupvalue(f, n, var_));     // else was LOCAL or UPVAL
         return Expdesc.VUPVAL;
       }
     }
@@ -904,20 +904,20 @@ loop:
     do
     {
       //# assert cc.v.k == Expdesc.VVOID || cc.tostore > 0
-      if (token == '}')
+      if (token == (int)'}')
         break;
       closelistfield(cc);
       switch(token)
       {
         case TK_NAME:  /* may be listfields or recfields */
           xLookahead();
-          if (lookahead != '=')  /* expression? */
+          if (lookahead != (int)'=')  /* expression? */
             listfield(cc);
           else
             recfield(cc);
           break;
 
-        case '[':  /* constructor_item -> recfield */
+        case (int)'[':  /* constructor_item -> recfield */
         recfield(cc);
         break;
 
@@ -1108,13 +1108,13 @@ loop:
     int line = linenumber;
     switch (token)
     {
-      case '(':         // funcargs -> '(' [ explist1 ] ')'
+      case (int)'(':         // funcargs -> '(' [ explist1 ] ')'
         if (line != lastline)
         {
           xSyntaxerror("ambiguous syntax (function call x new statement)");
         }
         xNext();
-        if (token == ')')       // arg list is empty?
+        if (token == (int)')')       // arg list is empty?
         {
           args.setKind(Expdesc.VVOID);
         }
@@ -1126,7 +1126,7 @@ loop:
         check_match(')', '(', line);
         break;
 
-      case '{':         // funcargs -> constructor
+      case (int)'{':         // funcargs -> constructor
         constructor_(args);
         break;
 
@@ -1165,7 +1165,7 @@ loop:
     // prefixexp -> NAME | '(' expr ')'
     switch (token)
     {
-      case '(':
+      case (int)'(':
       {
         int line = linenumber;
         xNext();
@@ -1192,11 +1192,11 @@ loop:
     {
       switch (token)
       {
-        case '.':  /* field */
+        case (int)'.':  /* field */
           field(v);
           break;
 
-        case '[':  /* `[' exp1 `]' */
+        case (int)'[':  /* `[' exp1 `]' */
           {
             Expdesc key = new Expdesc();
             fs.kExp2anyreg(v);
@@ -1205,7 +1205,7 @@ loop:
           }
           break;
 
-        case ':':  /* `:' NAME funcargs */
+        case (int)':':  /* `:' NAME funcargs */
           {
             Expdesc key = new Expdesc() ;
             xNext();
@@ -1215,9 +1215,9 @@ loop:
           }
           break;
 
-        case '(':
+        case (int)'(':
         case TK_STRING:
-        case '{':     // funcargs
+        case (int)'{':     // funcargs
           fs.kExp2nextreg(v);
           funcargs(v);
           break;
@@ -1235,7 +1235,7 @@ loop:
     // registers with returned values (first, nret)
     int first = 0;
     int nret;
-    if (block_follow(token) || token == ';')
+    if (block_follow(token) || token == (int)';')
     {
       // return no values
       first = 0;
@@ -1306,7 +1306,7 @@ loop:
         v.init(Expdesc.VVARARG, fs.kCodeABC(Lua.OP_VARARG, 0, 1, 0));
         break;
 
-      case '{':   /* constructor */
+      case (int)'{':   /* constructor */
         constructor_(v);
         return;
 
@@ -1405,18 +1405,18 @@ loop:
   {
     switch (op)
     {
-      case '+': return OPR_ADD;
-      case '-': return OPR_SUB;
-      case '*': return OPR_MUL;
-      case '/': return OPR_DIV;
-      case '%': return OPR_MOD;
-      case '^': return OPR_POW;
+      case (int)'+': return OPR_ADD;
+      case (int)'-': return OPR_SUB;
+      case (int)'*': return OPR_MUL;
+      case (int)'/': return OPR_DIV;
+      case (int)'%': return OPR_MOD;
+      case (int)'^': return OPR_POW;
       case TK_CONCAT: return OPR_CONCAT;
       case TK_NE: return OPR_NE;
       case TK_EQ: return OPR_EQ;
-      case '<': return OPR_LT;
+      case (int)'<': return OPR_LT;
       case TK_LE: return OPR_LE;
-      case '>': return OPR_GT;
+      case (int)'>': return OPR_GT;
       case TK_GE: return OPR_GE;
       case TK_AND: return OPR_AND;
       case TK_OR: return OPR_OR;
@@ -1429,8 +1429,8 @@ loop:
     switch (op)
     {
       case TK_NOT: return OPR_NOT;
-      case '-': return OPR_MINUS;
-      case '#': return OPR_LEN;
+      case (int)'-': return OPR_MINUS;
+      case (int)'#': return OPR_LEN;
       default: return OPR_NOUNOPR;
     }
   }
@@ -1572,7 +1572,7 @@ loop:
     /* parlist -> [ param { `,' param } ] */
     Proto f = fs.f;
     int nparams = 0;
-    if (token != ')')    /* is `parlist' not empty? */
+    if (token != (int)')')    /* is `parlist' not empty? */
     {
       do
       {
@@ -1706,9 +1706,9 @@ loop:
     /* funcname -> NAME {field} [`:' NAME] */
     boolean needself = false;
     singlevar(v);
-    while (token == '.')
+    while (token == (int)'.')
       field(v);
-    if (token == ':')
+    if (token == (int)':')
     {
       needself = true;
       field(v);
@@ -1807,10 +1807,10 @@ loop:
     String varname = str_checkname();  /* first variable name */
     switch (token)
     {
-      case '=':
+      case (int)'=':
         fornum(varname, line);
         break;
-      case ',':
+      case (int)',':
       case TK_IN:
         forlist(varname);
         break;

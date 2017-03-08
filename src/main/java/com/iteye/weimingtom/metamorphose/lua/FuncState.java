@@ -44,7 +44,7 @@ final class FuncState
    * Table to find (and reuse) elements in <var>f.k</var>.  Maps from
    * Object (a constant Lua value) to an index into <var>f.k</var>.
    */
-  HashMap h = new HashMap();
+  HashMap<Object, Integer> h = new HashMap<Object, Integer>();
 
   /** Enclosing function. */
   FuncState prev;
@@ -891,32 +891,32 @@ final class FuncState
   }
 
   /** Equivalent to <code>luaK_storevar</code>. */
-  void kStorevar(Expdesc var, Expdesc ex)
+  void kStorevar(Expdesc var_, Expdesc ex)
   {
-    switch (var.k)
+    switch (var_.k)
     {
       case Expdesc.VLOCAL:
       {
         freeexp(ex);
-        exp2reg(ex, var.info);
+        exp2reg(ex, var_.info);
         return;
       }
       case Expdesc.VUPVAL:
       {
         int e = kExp2anyreg(ex);
-        kCodeABC(Lua.OP_SETUPVAL, e, var.info, 0);
+        kCodeABC(Lua.OP_SETUPVAL, e, var_.info, 0);
         break;
       }
       case Expdesc.VGLOBAL:
       {
         int e = kExp2anyreg(ex);
-        kCodeABx(Lua.OP_SETGLOBAL, e, var.info);
+        kCodeABx(Lua.OP_SETGLOBAL, e, var_.info);
         break;
       }
       case Expdesc.VINDEXED:
       {
         int e = kExp2RK(ex);
-        kCodeABC(Lua.OP_SETTABLE, var.info, var.aux, e);
+        kCodeABC(Lua.OP_SETTABLE, var_.info, var_.aux, e);
         break;
       }
       default:

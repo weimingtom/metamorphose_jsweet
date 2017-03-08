@@ -350,7 +350,7 @@ public final class PackageLib extends LuaJavaCallback
       ++i;
     if (i == path.length())
       return null;      // no more templates
-    int l = path.indexOf(PATHSEP, i);
+    int l = path.indexOf(Character.toString(PATHSEP), i);
     if (l < 0)
       l = path.length();
     L.pushString(path.substring(i, l)); // template

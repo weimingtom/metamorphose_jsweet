@@ -113,6 +113,7 @@ final class LuaInternal extends LuaJavaCallback
     }
     catch (IOException e)
     {
+    	e.printStackTrace(); //FIXME:jsweet
       L.push("cannot read " + chunkname + ": " + e.toString());
       L.dThrow(Lua.ERRFILE);
       return 0;

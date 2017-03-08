@@ -167,16 +167,25 @@ final class Syntax
   static boolean isalnum(int c)
   {
     char ch = (char)c;
-    return Character.isUpperCase(ch) ||
-        Character.isLowerCase(ch) ||
-        Character.isDigit(ch);
+    System.out.println("isalnum:" + c + "," + ch); //FIXME:jsweet
+//    return Character.isUpperCase(ch) ||
+//        Character.isLowerCase(ch) ||
+//        Character.isDigit(ch);
+    //FIXME:
+    return (c >= (int)'A' && c <= (int)'Z') ||
+    	    (c >= (int)'a' && c <= (int)'z') ||
+    		(c >= (int)'0' && c <= (int)'9');
   }
 
   static boolean isalpha(int c)
   {
     char ch = (char)c;
-    return Character.isUpperCase(ch) ||
-        Character.isLowerCase(ch);
+    System.out.println("isalpha:" + c + "," + ch); //FIXME:jsweet
+//    return Character.isUpperCase(ch) ||
+//        Character.isLowerCase(ch);
+    //FIXME:jsweet
+    return (c >= (int)'A' && c <= (int)'Z') ||
+    	    (c >= (int)'a' && c <= (int)'z');
   }
 
   /** True if and only if the char (when converted from the int) is a

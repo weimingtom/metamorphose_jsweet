@@ -21,3 +21,25 @@ Clean the project: the target/js should be populated.
 Right-click on webapp/index.html and choose Open with > System editor. If successful, your browser should popup an alert.
 Read the following sections to get some hints on how to write JSweet code.
 
+-------------------------
+
+breakpoint:
+Lua.prototype.dThrow = function (status) {
+-->    throw new lua.LuaError(status);
+};
+
+    catch (IOException e)
+    {
+ -->     L.push("cannot read " + chunkname + ": " + e.toString());
+      L.dThrow(Lua.ERRFILE);
+      return 0;
+    }
+    
+---------------------------
+
+jsweet runtime error work around, search 
+
+//FIXME:jsweet
+
+---------------------------
+

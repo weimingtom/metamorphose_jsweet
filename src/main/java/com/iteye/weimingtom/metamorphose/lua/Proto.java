@@ -235,7 +235,10 @@ final class Proto
     if (pc >= lineinfo.length)
     {
       int[] newLineinfo = new int[lineinfo.length*2+1];
-      System.arraycopy(lineinfo, 0, newLineinfo, 0, lineinfo.length);
+      //System.arraycopy(lineinfo, 0, newLineinfo, 0, lineinfo.length);
+      for (int i = 0; i < lineinfo.length; i++) {
+    	  newLineinfo[i] = lineinfo[i]; 
+      }
       lineinfo = newLineinfo;
     }
     lineinfo[pc] = line;
@@ -251,7 +254,10 @@ final class Proto
       if (atleast + 1 > newsize)
         L.gRunerror("too many local variables") ;
       LocVar [] newlocvars = new LocVar [newsize] ;
-      System.arraycopy(locvars, 0, newlocvars, 0, sizelocvars) ;
+      //System.arraycopy(locvars, 0, newlocvars, 0, sizelocvars) ;
+      for (int i = 0; i < sizelocvars; i++) {
+    	  newlocvars[i] = locvars[i]; 
+      }
       for (int i = sizelocvars ; i < newsize ; i++)
         newlocvars[i] = new LocVar() ;
       locvars = newlocvars ;
@@ -269,7 +275,10 @@ final class Proto
       if (atleast + 1 > newsize)
         L.gRunerror("constant table overflow") ;
       Proto [] newprotos = new Proto [newsize] ;
-      System.arraycopy(p, 0, newprotos, 0, sizep) ;
+      //System.arraycopy(p, 0, newprotos, 0, sizep) ;
+      for (int i = 0; i < sizep; i++) {
+    	  newprotos[i] = p[i]; 
+      }
       p = newprotos ;
       sizep = newsize ;
     }
@@ -283,7 +292,10 @@ final class Proto
       if (atleast + 1 > newsize)
         L.gRunerror("upvalues overflow") ;
       String [] newupvalues = new String [newsize] ;
-      System.arraycopy(upvalues, 0, newupvalues, 0, sizeupvalues) ;
+      //System.arraycopy(upvalues, 0, newupvalues, 0, sizeupvalues) ;
+      for (int i = 0; i < sizeupvalues; i++) {
+    	  newupvalues[i] = upvalues[i]; 
+      }
       upvalues = newupvalues ;
       sizeupvalues = newsize ;
     }
@@ -297,7 +309,10 @@ final class Proto
       if (atleast + 1 > newsize)
         L.gRunerror("code overflow") ;
       int [] newcode = new int [newsize] ;
-      System.arraycopy(code, 0, newcode, 0, sizecode) ;
+      //System.arraycopy(code, 0, newcode, 0, sizecode) ;
+      for (int i = 0; i < sizecode; i++) {
+    	  newcode[i] = code[i]; 
+      }
       code = newcode ;
       sizecode = newsize ;
     }
@@ -337,7 +352,10 @@ final class Proto
     if (idx >= k.length)
     {
       Slot[] newK = new Slot[k.length*2+1];
-      System.arraycopy(k, 0, newK, 0, k.length);
+      //System.arraycopy(k, 0, newK, 0, k.length);
+      for (int i = 0; i < k.length; i++) {
+    	  newK[i] = k[i]; 
+      }
       k = newK;
     }
     k[idx] = new Slot(o);
@@ -377,7 +395,10 @@ final class Proto
       return old;
     }
     int[] newArray = new int[n];
-    System.arraycopy(old, 0, newArray, 0, n);
+    //System.arraycopy(old, 0, newArray, 0, n);
+    for (int i = 0; i < n; i++) {
+    	newArray[i] = old[i]; 
+    }
     return newArray;
   }
 
@@ -401,7 +422,10 @@ final class Proto
     if (k.length > n)
     {
       Slot[] newArray = new Slot[n];
-      System.arraycopy(k, 0, newArray, 0, n);
+      //System.arraycopy(k, 0, newArray, 0, n);
+      for (int i = 0; i < n; i++) {
+    	  newArray[i] = k[i]; 
+      }
       k = newArray;
     }
     sizek = n ;
@@ -416,7 +440,10 @@ final class Proto
       return;
     }
     Proto[] newArray = new Proto[n];
-    System.arraycopy(p, 0, newArray, 0, n);
+    //System.arraycopy(p, 0, newArray, 0, n);
+    for (int i = 0; i < n; i++) {
+    	newArray[i] = p[i]; 
+    }
     p = newArray;
     sizep = n ;
   }
@@ -429,7 +456,10 @@ final class Proto
       return;
     }
     LocVar[] newArray = new LocVar[n];
-    System.arraycopy(locvars, 0, newArray, 0, n);
+    //System.arraycopy(locvars, 0, newArray, 0, n);
+    for (int i = 0; i < n; i++) {
+    	newArray[i] = locvars[i]; 
+    }
     locvars = newArray;
     sizelocvars = n;
   }
@@ -442,7 +472,10 @@ final class Proto
       return;
     }
     String[] newArray = new String[nups];
-    System.arraycopy(upvalues, 0, newArray, 0, nups);
+    //System.arraycopy(upvalues, 0, newArray, 0, nups);
+    for (int i = 0; i < nups; i++) {
+    	newArray[i] = upvalues[i]; 
+    }
     upvalues = newArray;
     sizeupvalues = nups;
   }

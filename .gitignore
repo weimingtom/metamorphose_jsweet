@@ -19,3 +19,4 @@ target/
 a.txt
 webapp/j4ts-0.2.0-SNAPSHOT/
 webapp/jquery-1.10.0-SNAPSHOT/
+webapp/target/

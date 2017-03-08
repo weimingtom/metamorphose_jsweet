@@ -4131,7 +4131,10 @@ reentry:
       // Currently the stack only ever grows, so the number of items to
       // copy is the length of the old stack.
       int toCopy = stack.length;
-      System.arraycopy(stack, 0, newStack, 0, toCopy);
+      //System.arraycopy(stack, 0, newStack, 0, toCopy);
+      for (int i = 0; i < toCopy; i++) {
+    	  newStack[i] = stack[i]; 
+      }
       stack = newStack;
     }
     stackSize = n;

@@ -11,7 +11,7 @@ import com.iteye.weimingtom.metamorphose.lua.StringLib;
 import com.iteye.weimingtom.metamorphose.lua.TableLib;
 
 /**
- * 这个类用于测试简单的doString
+ * a simple class to test method doString
  */
 public class Test001 {
 	/**

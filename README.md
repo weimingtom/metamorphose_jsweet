@@ -8,3 +8,4 @@ metamorphose jsweet transpile
 * https://github.com/weimingtom/metamorphose  
 * https://github.com/cincheo/jsweet-quickstart  
 * http://www.jsweet.org  
+* https://github.com/cincheo/jsweet-examples  

@@ -73,8 +73,8 @@
 				<version>1.2.0</version>
 				<configuration>
 					<verbose>true</verbose>
-					<tsOut>target/ts</tsOut>
-					<outDir>target/js</outDir>
+					<tsOut>webapp/target/ts</tsOut>
+					<outDir>webapp/target/js</outDir>
 					<candiesJsOut>webapp</candiesJsOut>
 					<targetVersion>ES3</targetVersion>
 				</configuration>

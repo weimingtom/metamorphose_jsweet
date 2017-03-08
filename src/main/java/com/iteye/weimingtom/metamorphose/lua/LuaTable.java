@@ -236,8 +236,11 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
       // array part.
       // For now we choose the first algorithm.
       // :todo: consider using second algorithm, possibly dynamically.
-      System.arraycopy(array, 0, newarray, 0, array.length);
-      for (int i=array.length; i<nasize; ++i)
+      //System.arraycopy(array, 0, newarray, 0, array.length);
+      for (int i = 0; i < array.length; i++) {
+    	  newarray[i] = array[i]; 
+      }
+    	for (int i=array.length; i<nasize; ++i)
       {
         Object key = new Double(i+1);
         Object v = super.remove(key);
@@ -260,7 +263,10 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
           super.put(key, array[i]);
         }
       }
-      System.arraycopy(array, 0, newarray, 0, newarray.length);
+      //System.arraycopy(array, 0, newarray, 0, newarray.length);
+      for (int i = 0; i < newarray.length; i++) {
+    	  newarray[i] = array[i]; 
+      }
     }
     array = newarray;
     sizeArray = array.length;

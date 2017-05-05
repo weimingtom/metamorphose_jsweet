@@ -115,9 +115,14 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
 
   private static int arrayindex(Object key)
   {
-    if (key instanceof Double)
+    if (key instanceof Double || key instanceof FakeDouble)
     {
-      double d = (double)((Double)key);
+      double d = 0;
+      if (key instanceof FakeDouble) {
+    	  d = (double)(((FakeDouble)key).val);
+      } else {
+    	  d = (double)((Double)key);
+      }
       int k = (int)d;
       if (k == d)
       {
@@ -242,7 +247,7 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
       }
     	for (int i=array.length; i<nasize; ++i)
       {
-        Object key = new Double(i+1);
+        Object key = new FakeDouble(i+1);
         Object v = super.remove(key);
         if (v == null)
         {
@@ -259,7 +264,7 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
       {
         if (array[i] != Lua.NIL)
         {
-          Object key = new Double(i+1);
+          Object key = new FakeDouble(i+1);
           super.put(key, array[i]);
         }
       }
@@ -383,9 +388,14 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
    */
   public Object getlua(Object key)
   {
-    if (key instanceof Double)
+    if (key instanceof Double || key instanceof FakeDouble)
     {
-      double d = (double)((Double)key);
+      double d = 0;
+      if (key instanceof FakeDouble) {
+    	  d = (double)(((FakeDouble)key).val);
+      } else {
+    	  d = (double)((Double)key);
+      }
       if (d <= sizeArray && d >=1)
       {
         int i = (int)d;
@@ -437,7 +447,7 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
     {
       return array[k-1];
     }
-    Object r = super.get(new Double(k));
+    Object r = super.get(new FakeDouble(k));
     if (r == null)
     {
       return Lua.NIL;
@@ -465,9 +475,13 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
     {
       L.gRunerror("table index is nil");
     }
-    if (key instanceof Double)
+    if (key instanceof Double || key instanceof FakeDouble)
     {
-      d = (double)((Double)key);
+    	if (key instanceof FakeDouble) {
+    		d = (double)(((FakeDouble)key).val);
+    	} else {
+    		d = (double)((Double)key);
+    	}
       int j = (int)d;
 
       if (j == d && j >= 1)
@@ -551,7 +565,7 @@ public final class LuaTable extends java.util.HashMap<Object,Object>
     // The key can never be NIL so putlua will never notice that its L
     // argument is null.
     // :todo: optimisation to avoid putlua checking for array part again
-    putlua(null, new Double(k), v);
+    putlua(null, new FakeDouble(k), v);
   }
 
   /**
@@ -655,7 +669,7 @@ final class Enum /*implements Iterator*/
     if (i < t.sizeArray)
     {
       ++i;      // array index i corresponds to key i+1
-      r = new Double(i);
+      r = new FakeDouble(i);
       inci();
     }
     else

@@ -3,6 +3,7 @@ https://github.com/cincheo/jsweet-examples
 https://github.com/j4ts/j4ts
 http://www.jsweet.org/eclipse-plugin/
 
+eclipse run configuration (maven build): (need typescript@2.2.1)
 mvn generate-sources
 
 Installation

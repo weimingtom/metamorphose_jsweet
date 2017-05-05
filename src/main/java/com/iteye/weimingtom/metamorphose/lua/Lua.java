@@ -448,7 +448,7 @@ public final class Lua
    */
   public boolean equal(Object o1, Object o2)
   {
-    if (o1 instanceof Double)
+    if (o1 instanceof FakeDouble || o1 instanceof Double)
     {
       return o1.equals(o2);
     }
@@ -706,7 +706,7 @@ public final class Lua
    */
   public /*static*/ boolean isString(Object o)
   {
-    return o instanceof String || o instanceof Double;
+    return o instanceof String || o instanceof FakeDouble || o instanceof Double;
   }
 
   /**
@@ -763,6 +763,7 @@ public final class Lua
     return o == NIL ||
         o instanceof Boolean ||
         o instanceof String ||
+        o instanceof FakeDouble || 
         o instanceof Double ||
         o instanceof LuaFunction ||
         o instanceof LuaJavaCallback ||
@@ -934,7 +935,7 @@ public final class Lua
       LuaTable t = (LuaTable)o;
       return t.getn();
     }
-    if (o instanceof Double)
+    if (o instanceof Double || o instanceof FakeDouble)
     {
       return vmTostring(o).length();
     }
@@ -980,6 +981,7 @@ public final class Lua
     }
     catch (LuaError e)
     {
+    	e.printStackTrace();
       fClose(restoreStack);   // close eventual pending closures
       dSeterrorobj(e.errorStatus, restoreStack);
       nCcalls = oldnCcalls;
@@ -1064,7 +1066,7 @@ public final class Lua
   public void pushNumber(double d)
   {
     // :todo: optimise to avoid creating Double instance
-    push(new Double(d));
+    push(new FakeDouble(d));
   }
 
   /**
@@ -1473,7 +1475,7 @@ protect:
     {
       return TNIL;
     }
-    else if (o instanceof Double)
+    else if (o instanceof Double || o instanceof FakeDouble)
     {
       return TNUMBER;
     }
@@ -1568,7 +1570,7 @@ protect:
   public static Object valueOfNumber(double d)
   {
     // :todo: consider interning "common" numbers, like 0, 1, -1, etc.
-    return new Double(d);
+    return new FakeDouble(d);
   }
 
   /**
@@ -2339,6 +2341,7 @@ protect:
 
   void dThrow(int status)
   {
+	  new Exception().printStackTrace();
     throw new LuaError(status);
   }
 
@@ -3848,6 +3851,7 @@ reentry:
       }
       catch (LuaError e)
       {
+    	  e.printStackTrace();
         throw e;
       }
       catch (RuntimeException e)
@@ -3921,7 +3925,7 @@ reentry:
     {
       return (String)o;
     }
-    if (!(o instanceof Double))
+    if (!(o instanceof Double || o instanceof FakeDouble))
     {
       return null;
     }
@@ -3940,7 +3944,12 @@ reentry:
     // each time.
     FormatItem f = new FormatItem(null, NUMBER_FMT);
     StringBuffer b = new StringBuffer();
-    Double d = (Double)o;
+    Double d = (Double)(double)0;
+    if (o instanceof FakeDouble) {
+    	d = (((FakeDouble) o).val);
+    } else {
+    	d = (Double)o;
+    }
     f.formatFloat(b, (double)d);
     return b.toString();
   }
@@ -4397,7 +4406,7 @@ reentry:
     {
       return r;
     }
-    return new Double(stack[idx].d);
+    return new FakeDouble(stack[idx].d);
   }
 
   /**
@@ -4407,13 +4416,17 @@ reentry:
    */
   private void setObjectAt(Object o, int idx)
   {
-    if (o instanceof Double)
+    if (o instanceof Double || o instanceof FakeDouble)
     {
     	if (D) {
     		System.err.println("setObjectAt"+ idx);
     	}
       stack[idx].r = NUMBER;
-      stack[idx].d = (double)((Double)o);
+      if (o instanceof FakeDouble) {
+    	  stack[idx].d = (double)(((FakeDouble)o).val);
+      } else {
+    	  stack[idx].d = (double)((Double)o);
+      }  
       return;
     }
     stack[idx].r = o;
@@ -4613,7 +4626,7 @@ final class Slot
   {
     if (r == Lua.NUMBER)
     {
-      return new Double(d);
+      return new FakeDouble(d);
     }
     return r;
   }
@@ -4621,10 +4634,14 @@ final class Slot
   void setObject(Object o)
   {
     r = o;
-    if (o instanceof Double)
+    if (o instanceof Double || o instanceof FakeDouble)
     {
       r = Lua.NUMBER;
-      d = (double)((Double)o);
+      if (o instanceof FakeDouble) {
+    	  d = (double)(((FakeDouble)o).val);
+  	  } else {
+	      d = (double)((Double)o);
+	    }
       if (Lua.D) {
     	  System.err.println("Slot.setObject:" + d);
       }
